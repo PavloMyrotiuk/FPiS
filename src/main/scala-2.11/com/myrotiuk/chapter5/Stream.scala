@@ -1,8 +1,5 @@
 package com.myrotiuk.chapter5
 
-/**
- * Created by user on 06.01.2016.
- */
 object Stream {
   def empty[A]: Stream[A] = new Stream[A] {
     def uncons = None
@@ -53,13 +50,40 @@ trait Stream[+A] {
     }
     take(this, Stream.empty)(p)
   }
+
+  def foldRight[B](z: => B)(f: (A, => B) => B): B =
+    uncons match {
+      case Some((h, t)) => f(h, t.foldRight(z)(f))
+      case None => z
+    }
+
+  def exists(p: A => Boolean): Boolean = foldRight(false)((a, b) => p(a) || b)
+
+  def forAll(p: A => Boolean): Boolean = foldRight(true)((a, b) => p(a) && b)
+
+  def takeWhile2(p: A => Boolean): Stream[A] = foldRight(Stream.empty[A]) { (a, b) => if (p(a)) Stream.cons(a, b) else Stream.empty }
+
+  def map[B](p: A => B): Stream[B] = foldRight(Stream.empty[B])((a, b) => Stream.cons(p(a), b))
+
+  def filter(p: A => Boolean): Stream[A] = foldRight(Stream.empty[A]) { (a, b) => if (p(a)) Stream.cons(a, b) else b }
+
+  def flatMap[B](p: A => Stream[B]): Stream[B] = foldRight(Stream.empty[B])((a, b) => Stream.cons(p(a).uncons.get._1, b))
 }
-
-
 
 
 object Index extends App {
   //  println(Stream(1, 2, 3, 4, 5).take(2).toList)
-  println(Stream(1, 2, 3, 4, 5).takeWhile(_ < 3).toList)
-}
+  //    println(Stream(1, 2, 3, 4, 5,2).takeWhile(_==1).toList)
+  //  println(Stream(1, 2, 4, 5, 6, 7, 8, 9, 10).forAll(_ < 10))
+  //  println(Stream(1, 2, 3, 4, 5, 1, 8).takeWhile2(_ < 3).toList)
+  //  println(Stream(1, 2, 3, 4, 5, 1, 8).filter(_ < 5).toList)
+  //  println(Stream(1, 2, 3).map(1 + _).toList)
+  //  private val stream: Stream[Int]= for (i <- Stream(1, 2, 3); j<- Stream(1, 2,3) if i*j < 40) yield i*j
+  //  println(stream.toList)
+  //  println(Stream(1, 2, 3, 4).map(_ + 10).filter(_ % 2 == 0).toList)
+  //  val ones: Stream[Int] = Stream.cons(1, ones)
+  //  println(ones.take(5).toList)
+  //  println(ones.takeWhile(_==1).toList)
+  //  println(ones.forAll(_ != 1))
 
+}
