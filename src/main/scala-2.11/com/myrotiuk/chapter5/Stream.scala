@@ -17,6 +17,32 @@ object Stream {
   def append[A](st: => Stream[A], el: => A): Stream[A] = merge(st, Stream(el));
 
   def apply[A](as: A*): Stream[A] = if (as.isEmpty) empty else cons(as.head, apply(as.tail: _*))
+
+  def fibs: Stream[Int] = {
+    def fibs(a: Int, b: Int): Stream[Int] = cons(a, fibs(b, a + b))
+    fibs(0, 1)
+  }
+
+  def constant[A](a: A): Stream[A] = Stream.cons(a, constant(a))
+
+  def from(n: Int): Stream[Int] = Stream.cons(n, Stream.from(n + 1))
+
+  def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] = f(z) match {
+    case Some((h, t)) => Stream.cons(h, Stream.unfold(t)(f))
+    case None => Stream.empty
+  }
+
+  def from2(n: Int): Stream[Int] = unfold(n)(n => Some(n, n + 1))
+
+  def constant2[A](a: A): Stream[A] = unfold(a)(_ => Some(a, a))
+
+  def fibs2: Stream[Int] = {
+
+    def fibs2(a: Int): Stream[Int] = {
+      unfold(a)(t => Some(a, fibs2(a+1).take(1).uncons.get._1))
+    }
+    fibs2(0)
+  }
 }
 
 trait Stream[+A] {
@@ -85,5 +111,15 @@ object Index extends App {
   //  println(ones.take(5).toList)
   //  println(ones.takeWhile(_==1).toList)
   //  println(ones.forAll(_ != 1))
+
+  //    println(Stream.constant(6).take(4).toList)
+  //  println(Stream.from(7).take(10).toList)
+  //  println(Stream.unfold(5)(t => Some("five", t)).take(7).toList)
+  //  println(Stream.from2(3).take(5).toList)
+  //  println(Stream.constant2("A").take(4).toList)
+  //  println(Stream.fibs.take(5).toList)
+  println(Stream.fibs.take(10).toList)
+  println(Stream.fibs2.take(10).toList)
+
 
 }
