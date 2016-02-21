@@ -36,6 +36,8 @@ object Stream {
 
   def constant2[A](a: A): Stream[A] = unfold(a)(_ => Some(a, a))
 
+  def fibs2: Stream[Int] = unfold(0 -> 1)(s => Some(s._1, s._1 + s._2 -> s._1))
+
 }
 
 trait Stream[+A] {
@@ -112,4 +114,5 @@ object Index extends App {
   //  println(Stream.constant2("A").take(4).toList)
   //  println(Stream.fibs.take(5).toList)
   println(Stream.fibs.take(10).toList)
+  println(Stream.fibs2.take(10).toList)
 }
