@@ -35,15 +35,15 @@ object RNG {
     (r1, r2, r3) -> rng3
   }
 
-  def ints(count: Int)(rng: RNG): (List[Int], RNG) = {
-    if (count == 0) {
-      Nil -> rng
-    } else {
-      val (next, rng1) = positiveInt(rng)
-      val (intss, finalRng) = ints(count - 1)(rng1)
-      next::intss -> finalRng
-    }
-  }
+//  def ints(count: Int)(rng: RNG): (List[Int], RNG) = {
+//    if (count == 0) {
+//      Nil -> rng
+//    } else {
+//      val (next, rng1) = positiveInt(rng)
+//      val (intss, finalRng) = ints(count - 1)(rng1)
+//      next::intss -> finalRng
+//    }
+//  }
 }
 
 object IndexRNG extends App {
